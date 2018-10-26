@@ -7,13 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class PhotoGalleryFragment extends Fragment{
     private static final String TAG = "PhotoGalleryFragment";
 
     private RecyclerView mPhotoRecyclerView;
-    private List<GallaryItem> mItems = new ArrayList<>();
+    private List<GalleryItem> mItems = new ArrayList<>();
 
     public static PhotoGalleryFragment createInstance(){
         return  new PhotoGalleryFragment();
@@ -62,16 +60,16 @@ public class PhotoGalleryFragment extends Fragment{
             mTitleTextView = (TextView) itemView;
         }
 
-        public void bindGalleryItem(GallaryItem item){
+        public void bindGalleryItem(GalleryItem item){
             mTitleTextView.setText(item.toString());
         }
     }
 
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder>{
-        private List<GallaryItem> mGallaryItems;
+        private List<GalleryItem> mGalleryItems;
 
-        public PhotoAdapter (List<GallaryItem> gallaryItems){
-            mGallaryItems = gallaryItems;
+        public PhotoAdapter (List<GalleryItem> galleryItems){
+            mGalleryItems = galleryItems;
         }
 
         @NonNull
@@ -83,27 +81,27 @@ public class PhotoGalleryFragment extends Fragment{
 
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
-            GallaryItem gallaryItem = mGallaryItems.get(position);
-            holder.bindGalleryItem(gallaryItem);
+            GalleryItem galleryItem = mGalleryItems.get(position);
+            holder.bindGalleryItem(galleryItem);
         }
 
         @Override
         public int getItemCount() {
-            return mGallaryItems.size();
+            return mGalleryItems.size();
         }
     }
 
 
-    private class FetchItemsTask extends AsyncTask<Void, Void, List<GallaryItem>> {
+    private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
 
         @Override
-        protected List<GallaryItem> doInBackground(Void... voids) {
+        protected List<GalleryItem> doInBackground(Void... voids) {
             return new FlickrFetchr().fetchItems();
         }
 
         @Override
-        protected void onPostExecute(List<GallaryItem> gallaryItems) {
-            mItems = gallaryItems;
+        protected void onPostExecute(List<GalleryItem> galleryItems) {
+            mItems = galleryItems;
             setupAdapter();
         }
     }

@@ -1,6 +1,6 @@
 package com.g.e.photogallery;
 
-public class GallaryItem {
+public class GalleryItem {
     private String mCaption;
     private String mId;
     private String mUrl;

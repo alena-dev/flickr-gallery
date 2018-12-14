@@ -1,6 +1,5 @@
 package com.g.e.photogallery;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -19,12 +18,23 @@ public class ThumbnailDownloader<T> extends HandlerThread{
     private boolean mHasQuit = false;
     private Handler mRequestHandler;
     private ConcurrentMap <T, String> mRequestMap = new ConcurrentHashMap<>();
+    private Handler mResponseHandler;
+    private ThumbnailDownloadListener<T> mThumbnailDownloadListener;
 
-    public ThumbnailDownloader() {
-        super(TAG);
+    public  interface ThumbnailDownloadListener<T>{
+        void  onThumbnailDownloaded(T target, Bitmap thumbnail);
     }
 
-    @SuppressLint("HandlerLeak")
+    public  void setThumbnailDownloaderListener(ThumbnailDownloadListener<T> listener){
+        mThumbnailDownloadListener = listener;
+    }
+
+
+    public ThumbnailDownloader(Handler responseHandler) {
+        super(TAG);
+        mResponseHandler = responseHandler;
+    }
+
     @Override
     protected void onLooperPrepared() {
         mRequestHandler = new Handler(){
@@ -50,6 +60,18 @@ public class ThumbnailDownloader<T> extends HandlerThread{
             final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes,
                     0, bitmapBytes.length);
             Log.i(TAG, "Bitmap created");
+
+            mResponseHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(mRequestMap.get(target) != url || mHasQuit)
+                        return;
+
+                    mRequestMap.remove(target);
+                    mThumbnailDownloadListener.onThumbnailDownloaded(target, bitmap);
+                }
+            });
+
         } catch (IOException ioe){
             Log.e(TAG, "Error downloading image", ioe);
         }
@@ -71,5 +93,10 @@ public class ThumbnailDownloader<T> extends HandlerThread{
             mRequestHandler.obtainMessage(MESSAGE_DOWNLOAD, target)
                     .sendToTarget();
         }
+    }
+
+    public void clearQueue (){
+        mRequestHandler.removeMessages(MESSAGE_DOWNLOAD);
+        mRequestMap.clear();
     }
 }

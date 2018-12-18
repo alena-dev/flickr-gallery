@@ -106,6 +106,7 @@ public class PhotoGalleryFragment extends Fragment{
 
                 hideKeyboardFrom(getActivity(), searchView);
                 searchView.onActionViewCollapsed();
+                clearAdapter();
 
                 return true;
             }
@@ -153,6 +154,13 @@ public class PhotoGalleryFragment extends Fragment{
         if(isAdded()) mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
     }
 
+    private void clearAdapter(){
+        if(isAdded()){
+            PhotoAdapter photoAdapter = (PhotoAdapter)mPhotoRecyclerView.getAdapter();
+            photoAdapter.clear();
+        }
+    }
+
     private class PhotoHolder extends RecyclerView.ViewHolder{
         private ImageView mItemImageView;
 
@@ -196,6 +204,10 @@ public class PhotoGalleryFragment extends Fragment{
         @Override
         public int getItemCount() {
             return mGalleryItems.size();
+        }
+
+        public void clear() {
+            mGalleryItems.clear();
         }
     }
 

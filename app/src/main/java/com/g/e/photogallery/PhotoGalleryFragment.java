@@ -105,6 +105,7 @@ public class PhotoGalleryFragment extends Fragment{
                 updateItems();
 
                 hideKeyboardFrom(getActivity(), searchView);
+                searchView.onActionViewCollapsed();
 
                 return true;
             }

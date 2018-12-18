@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
 public class PhotoGalleryFragment extends Fragment{
     private static final String TAG = "PhotoGalleryFragment";
 
+    private ProgressBar mProgressBar;
     private RecyclerView mPhotoRecyclerView;
     private List<GalleryItem> mItems = new ArrayList<>();
     private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
@@ -66,6 +68,8 @@ public class PhotoGalleryFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
+        mProgressBar = (ProgressBar) view.findViewById(
+                R.id.indeterminate_bar);
         mPhotoRecyclerView=(RecyclerView)view.findViewById(
                 R.id.photo_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(
@@ -107,6 +111,7 @@ public class PhotoGalleryFragment extends Fragment{
                 hideKeyboardFrom(getActivity(), searchView);
                 searchView.onActionViewCollapsed();
                 clearAdapter();
+                mProgressBar.setVisibility(View.VISIBLE);
 
                 return true;
             }
@@ -228,6 +233,7 @@ public class PhotoGalleryFragment extends Fragment{
         @Override
         protected void onPostExecute(List<GalleryItem> galleryItems) {
             mItems = galleryItems;
+            mProgressBar.setVisibility(View.INVISIBLE);
             setupAdapter();
         }
     }

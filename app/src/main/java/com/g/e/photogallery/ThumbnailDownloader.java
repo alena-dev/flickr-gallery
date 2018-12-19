@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+import android.util.LruCache;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +21,7 @@ public class ThumbnailDownloader<T> extends HandlerThread{
     private ConcurrentMap <T, String> mRequestMap = new ConcurrentHashMap<>();
     private Handler mResponseHandler;
     private ThumbnailDownloadListener<T> mThumbnailDownloadListener;
+    private LruCache <String, Bitmap> mBitmapCache = new LruCache<>(50);
 
     public  interface ThumbnailDownloadListener<T>{
         void  onThumbnailDownloaded(T target, Bitmap thumbnail);
@@ -57,9 +59,12 @@ public class ThumbnailDownloader<T> extends HandlerThread{
             if(url == null) return;
 
             byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes,
+            final  Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes,
                     0, bitmapBytes.length);
             Log.i(TAG, "Bitmap created");
+
+            mBitmapCache.put(url, bitmap);
+            Log.i(TAG, "Bitmap has been cached");
 
             mResponseHandler.post(new Runnable() {
                 @Override
@@ -89,9 +94,16 @@ public class ThumbnailDownloader<T> extends HandlerThread{
         if(url==null){
             mRequestMap.remove(target);
         } else {
-            mRequestMap.put(target, url);
-            mRequestHandler.obtainMessage(MESSAGE_DOWNLOAD, target)
-                    .sendToTarget();
+            Bitmap bitmap = mBitmapCache.get(url);
+
+            if(bitmap==null) {
+                mRequestMap.put(target, url);
+                mRequestHandler.obtainMessage(MESSAGE_DOWNLOAD, target)
+                        .sendToTarget();
+            } else {
+                mRequestMap.remove(target);
+                mThumbnailDownloadListener.onThumbnailDownloaded(target, bitmap);
+            }
         }
     }
 

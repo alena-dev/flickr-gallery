@@ -123,7 +123,22 @@ public class PhotoGalleryFragment extends Fragment{
             photoHolder.bindDrawable(placeholder);
             mThumbnailDownloader.queueThumbnail(photoHolder,
                     galleryItem.getUrl());
+
+            preDownloadItems(position);
     }
+
+        private void preDownloadItems(int position) {
+            int startPreloadPosition = position-10;
+            if (startPreloadPosition<0) startPreloadPosition = 0;
+
+            int endPreloadPosition = position+10;
+            int lastPosition = mGalleryItems.size()-1;
+            if(endPreloadPosition>lastPosition) endPreloadPosition = lastPosition;
+
+            for(int i = startPreloadPosition; i<= endPreloadPosition; i++){
+                mThumbnailDownloader.preDownload(mGalleryItems.get(i).getUrl());
+            }
+        }
 
         @Override
         public int getItemCount() {

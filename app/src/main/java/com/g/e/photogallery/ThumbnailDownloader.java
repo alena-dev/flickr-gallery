@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 public class ThumbnailDownloader<T> extends HandlerThread{
     private static final String TAG = "ThumbnailDownloader";
     private static final int MESSAGE_DOWNLOAD = 0;
+    private static final int MESSAGE_PREDOWNLOAD = 1;
 
     private boolean mHasQuit = false;
     private Handler mRequestHandler;
@@ -48,6 +49,22 @@ public class ThumbnailDownloader<T> extends HandlerThread{
                             +mRequestMap.get(target));
                     handleRequest(target);
                 }
+                if(msg.what == MESSAGE_PREDOWNLOAD){
+                    String url = msg.obj.toString();
+                    Log.i(TAG, "Got a request of predownload for URL: " + url);
+                    try{
+                        if(url == null) return;
+
+                        if (mBitmapCache.get(url)!=null) return;
+
+                        final Bitmap bitmap = downloadBitmap(url);
+
+                        putToCache(url, bitmap);
+
+                    } catch (IOException ioe){
+                        Log.e(TAG, "Error downloading image", ioe);
+                    }
+                }
             }
         };
     }
@@ -58,14 +75,12 @@ public class ThumbnailDownloader<T> extends HandlerThread{
 
             if(url == null) return;
 
-            byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-            final  Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes,
-                    0, bitmapBytes.length);
-            Log.i(TAG, "Bitmap created");
-
-            mBitmapCache.put(url, bitmap);
-            Log.i(TAG, "Bitmap has been cached");
-
+            Bitmap bitmap = mBitmapCache.get(url);
+            if (bitmap ==null) {
+                bitmap = downloadBitmap(url);
+                putToCache(url, bitmap);
+            }
+            final Bitmap resultBitmap = bitmap;
             mResponseHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -73,13 +88,29 @@ public class ThumbnailDownloader<T> extends HandlerThread{
                         return;
 
                     mRequestMap.remove(target);
-                    mThumbnailDownloadListener.onThumbnailDownloaded(target, bitmap);
+                    mThumbnailDownloadListener.onThumbnailDownloaded(target, resultBitmap);
                 }
             });
 
         } catch (IOException ioe){
             Log.e(TAG, "Error downloading image", ioe);
         }
+    }
+
+    private Bitmap downloadBitmap(String url) throws IOException {
+            if (url == null)return null;
+
+        byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes,
+                    0, bitmapBytes.length);
+            Log.i(TAG, "Bitmap created");
+
+            return bitmap;
+    }
+
+    private void putToCache(String url, Bitmap bitmap) {
+        mBitmapCache.put(url, bitmap);
+        Log.i(TAG, "Bitmap has been cached");
     }
 
     @Override
@@ -110,5 +141,21 @@ public class ThumbnailDownloader<T> extends HandlerThread{
     public void clearQueue (){
         mRequestHandler.removeMessages(MESSAGE_DOWNLOAD);
         mRequestMap.clear();
+    }
+
+    public void preDownload (String url){
+        Log.i(TAG, "Got a URL for predownloading: " + url);
+
+        if (url == null) return;
+
+//        1. Check image in cach
+        Bitmap bitmap = mBitmapCache.get(url);
+
+        if(bitmap == null) {
+            mRequestHandler.obtainMessage(MESSAGE_PREDOWNLOAD, url)
+                    .sendToTarget();
+//        2. Download image
+//        3. Put image in cach
+        }
     }
 }

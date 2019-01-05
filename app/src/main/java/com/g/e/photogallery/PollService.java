@@ -43,6 +43,13 @@ public class PollService extends IntentService{
         }
     }
 
+    public static boolean isServiceAlarmOn(Context context){
+        Intent intent = PollService.createIntent(context);
+        PendingIntent pendingIntent = PendingIntent
+                .getService(context, 0, intent, PendingIntent.FLAG_NO_CREATE);
+        return pendingIntent != null;
+    }
+
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if(!isNetworkAvailableAndConnected())return;

@@ -1,6 +1,5 @@
 package com.g.e.photogallery;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -43,7 +42,7 @@ public class PhotoGalleryFragment extends Fragment{
         setHasOptionsMenu(true);
         updateItems();
 
-//        Intent intent = PollService.createIntent(getActivity());
+//        Intent intent = PollServiceOld.createIntent(getActivity());
 //        getActivity().startService(intent);
 
         Handler responseHandler = new Handler();
@@ -123,7 +122,7 @@ public class PhotoGalleryFragment extends Fragment{
         });
 
         MenuItem toggleItem = menu.findItem(R.id.menu_item_toggle_polling);
-        if (PollService.isServiceAlarmOn(getActivity())){
+        if (PollServiceOld.isServiceAlarmOn(getActivity())){
             toggleItem.setTitle(R.string.stop_polling);
         } else {
             toggleItem.setTitle(R.string.start_polling);
@@ -138,8 +137,8 @@ public class PhotoGalleryFragment extends Fragment{
                 updateItems();
                 return true;
             case R.id.menu_item_toggle_polling:
-                boolean shouldStartAlarm = !PollService.isServiceAlarmOn(getActivity());
-                PollService.setServiceAlarm(getActivity(), shouldStartAlarm);
+                boolean shouldStartAlarm = !PollServiceOld.isServiceAlarmOn(getActivity());
+                PollServiceOld.setServiceAlarm(getActivity(), shouldStartAlarm);
                 getActivity().invalidateOptionsMenu();
                 return true;
                 default:

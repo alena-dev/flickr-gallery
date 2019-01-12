@@ -17,22 +17,22 @@ import android.util.Log;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PollService extends IntentService{
-    private  static final String TAG = "PollService";
+public class PollServiceOld extends IntentService{
+    private  static final String TAG = "PollServiceOld";
 
 //    15 min
     private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(15);
 
     public static Intent createIntent(Context context){
-        return new Intent(context, PollService.class);
+        return new Intent(context, PollServiceOld.class);
     }
 
-    public PollService(){
+    public PollServiceOld(){
         super(TAG);
     }
 
     public static void setServiceAlarm (Context context, boolean isOn){
-        Intent intent = PollService.createIntent(context);
+        Intent intent = PollServiceOld.createIntent(context);
         PendingIntent pendingIntent = PendingIntent
                 .getService(context, 0, intent, 0);
 
@@ -48,7 +48,7 @@ public class PollService extends IntentService{
     }
 
     public static boolean isServiceAlarmOn(Context context){
-        Intent intent = PollService.createIntent(context);
+        Intent intent = PollServiceOld.createIntent(context);
         PendingIntent pendingIntent = PendingIntent
                 .getService(context, 0, intent, PendingIntent.FLAG_NO_CREATE);
         return pendingIntent != null;

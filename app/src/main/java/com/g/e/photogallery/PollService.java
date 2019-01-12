@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 public class PollService extends IntentService{
     private  static final String TAG = "PollService";
 
-//    60 seconds
-    private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(1);
+//    15 min
+    private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(15);
 
     public static Intent createIntent(Context context){
         return new Intent(context, PollService.class);

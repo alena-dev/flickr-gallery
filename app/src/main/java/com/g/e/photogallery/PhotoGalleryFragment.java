@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -122,10 +123,18 @@ public class PhotoGalleryFragment extends Fragment{
         });
 
         MenuItem toggleItem = menu.findItem(R.id.menu_item_toggle_polling);
-        if (PollServiceOld.isServiceAlarmOn(getActivity())){
+        if (isPollingOn()){
             toggleItem.setTitle(R.string.stop_polling);
         } else {
             toggleItem.setTitle(R.string.start_polling);
+        }
+    }
+
+    private boolean isPollingOn() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return PollServiceOld.isServiceAlarmOn(getActivity());
+        } else {
+            return PollServiceNew.isPollingStarted(getActivity());
         }
     }
 
@@ -137,12 +146,21 @@ public class PhotoGalleryFragment extends Fragment{
                 updateItems();
                 return true;
             case R.id.menu_item_toggle_polling:
-                boolean shouldStartAlarm = !PollServiceOld.isServiceAlarmOn(getActivity());
-                PollServiceOld.setServiceAlarm(getActivity(), shouldStartAlarm);
+                togglePolling();
                 getActivity().invalidateOptionsMenu();
                 return true;
                 default:
                     return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void togglePolling() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            boolean shouldStartAlarm = !PollServiceOld.isServiceAlarmOn(getActivity());
+            PollServiceOld.setServiceAlarm(getActivity(), shouldStartAlarm);
+        } else {
+            boolean shouldStartPolling = !PollServiceNew.isPollingStarted(getActivity());
+            PollServiceNew.setPollingState(getActivity(), shouldStartPolling);
         }
     }
 

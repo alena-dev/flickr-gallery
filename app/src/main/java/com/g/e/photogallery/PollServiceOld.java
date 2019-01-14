@@ -25,14 +25,14 @@ public class PollServiceOld extends IntentService{
         super(TAG);
     }
 
-    public static void setServiceAlarm (Context context, boolean isOn){
+    public static void setServiceAlarm (Context context){
         Intent intent = PollServiceOld.createIntent(context);
         PendingIntent pendingIntent = PendingIntent
                 .getService(context, 0, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        if(isOn){
+        if(!isServiceAlarmOn(context)){
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(), POLL_INTERVAL_MS, pendingIntent);
         } else {

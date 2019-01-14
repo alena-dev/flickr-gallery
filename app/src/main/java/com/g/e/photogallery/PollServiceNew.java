@@ -44,11 +44,12 @@ public class PollServiceNew extends JobService {
         return hasBeenScheduled;
     }
 
-    public static void setPollingState(Context context, boolean isPollingOn) {
+    public static void setPollingState(Context context) {
+
         JobScheduler scheduler = (JobScheduler)
                 context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-        if(isPollingOn){
+        if(!isPollingStarted(context)){
             JobInfo jobInfo = new JobInfo.Builder(
                     JOB_ID, new ComponentName(context, PollServiceNew.class))
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)

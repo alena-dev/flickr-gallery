@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 
 @TargetApi(21)
 public class PollServiceNew extends JobService {
+    private  static final String TAG = "PollServiceNew";
     private PollTask mCurrentTask;
     private static final int JOB_ID = 1;
 
@@ -36,6 +37,7 @@ public class PollServiceNew extends JobService {
         for (JobInfo jobInfo : scheduler.getAllPendingJobs()){
             if (jobInfo.getId() == JOB_ID){
                 hasBeenScheduled = true;
+                break;
             }
         }
 
@@ -66,12 +68,10 @@ public class PollServiceNew extends JobService {
         protected Void doInBackground(JobParameters... params) {
             JobParameters jobParams = params[0];
 
-            // check new images
+            ImagesPollingHelper.CheckForNewImages(PollServiceNew.this, TAG);
 
             jobFinished(jobParams, false);
             return null;
         }
     }
-
-//    public static void
 }

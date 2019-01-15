@@ -1,11 +1,13 @@
 package com.g.e.photogallery;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
@@ -19,8 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 public class PollService extends IntentService{
     private  static final String TAG = "PollService";
+    public static final String REQUEST_CODE = "REQUEST_CODE";
+    public static final String NOTIFICATION = "NOTIFICATION";
 
-//    15 min
     private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(1);
     public static final String ACTION_SHOW_NOTIFICATION = "com.g.e.photogallery.SHOW_NOTIFICATION";
     public static final String PERM_PRIVATE = "com.g.e.photogallery.PRIVATE";
@@ -91,14 +94,18 @@ public class PollService extends IntentService{
                     .setContentIntent(pendingIntent)
                     .build();
 
-            NotificationManagerCompat notificationManager =
-                    NotificationManagerCompat.from(this);
-            notificationManager.notify(0, notification);
-
-            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
+            showBroadcastNotification (0, notification);
         }
 
         QueryPreferences.setLastResultId(this, resultId);
+    }
+
+    private void showBroadcastNotification(int requestCode, Notification notification) {
+        Intent intent = new Intent(ACTION_SHOW_NOTIFICATION);
+        intent.putExtra(REQUEST_CODE, requestCode);
+        intent.putExtra(NOTIFICATION, notification);
+        sendOrderedBroadcast(intent, PERM_PRIVATE, null,null,
+                Activity.RESULT_OK, null, null);
     }
 
     private boolean isNetworkAvailableAndConnected(){

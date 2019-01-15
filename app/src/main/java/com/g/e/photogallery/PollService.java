@@ -21,7 +21,7 @@ public class PollService extends IntentService{
     private  static final String TAG = "PollService";
 
 //    15 min
-    private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(15);
+    private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(1);
     public static final String ACTION_SHOW_NOTIFICATION = "com.g.e.photogallery.SHOW_NOTIFICATION";
 
     public static Intent createIntent(Context context){

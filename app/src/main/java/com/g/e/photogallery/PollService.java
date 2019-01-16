@@ -24,7 +24,7 @@ public class PollService extends IntentService{
     public static final String REQUEST_CODE = "REQUEST_CODE";
     public static final String NOTIFICATION = "NOTIFICATION";
 
-    private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(1);
+    private static  final long POLL_INTERVAL_MS = TimeUnit.MINUTES.toMillis(15);
     public static final String ACTION_SHOW_NOTIFICATION = "com.g.e.photogallery.SHOW_NOTIFICATION";
     public static final String PERM_PRIVATE = "com.g.e.photogallery.PRIVATE";
 

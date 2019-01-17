@@ -72,4 +72,12 @@ public class PhotoPageFragment extends VisibleFragment {
 
         return view;
     }
+
+    public boolean goBack (){
+        if (mWebView.canGoBack()){
+            mWebView.goBack();
+            return true;
+        }
+         return false;
+    }
 }

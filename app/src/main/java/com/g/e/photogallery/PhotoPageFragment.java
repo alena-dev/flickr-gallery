@@ -1,6 +1,7 @@
 package com.g.e.photogallery;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -68,8 +69,29 @@ public class PhotoPageFragment extends VisibleFragment {
         });
 
         mWebView.setWebViewClient(new WebViewClient());
-        mWebView.loadUrl(mUri.toString());
+//        mWebView.loadUrl(mUri.toString());
+//
+
+//        String address = "market://details?id=com.yahoo.mobile.client.android.flickr";
+////        Uri uri = Uri.parse(address)
+////                .buildUpon()
+////                .build();
+        String address = mUri.toString();
+
+        if(isUriHttp(address)) {
+            mWebView.loadUrl(address);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_VIEW, mUri);
+            startActivity(intent);
+        }
 
         return view;
+    }
+
+    public boolean isUriHttp (String uri) {
+        String protocol = uri.substring(0, 4);
+        if (protocol.equals("http")) return true;
+
+        return false;
     }
 }

@@ -16,6 +16,10 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class FlickrFetchr {
     private static final String TAG = "FlickrFetchr";
     private static final String API_KEY = "29998f6fc10c7983105860620944f16c";
@@ -77,7 +81,16 @@ public class FlickrFetchr {
     private List<GalleryItem> downloadGalleryItems(String url) {
         List<GalleryItem> items = new ArrayList<>();
         try {
-            String jsonString = getUrlString(url);
+//            String jsonString = getUrlString(url);
+
+            OkHttpClient client = new OkHttpClient();
+
+            Request.Builder builder = new Request.Builder();
+            builder.url(url);
+            Request request = builder.build();
+
+            Response response = client.newCall(request).execute();
+            String jsonString = response.body().string();
 
 
             Log.i(TAG, "Received JSON: " + jsonString);

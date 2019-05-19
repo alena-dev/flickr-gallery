@@ -18,7 +18,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class FlickrFetchr {
     private static final String TAG = "FlickrFetchr";
-    private static final String API_KEY = "898402f39d7d2962009374812d8a6fec";
+    private static final String API_KEY = "29998f6fc10c7983105860620944f16c";
 
     private static final String FETCH_RECENTS_METHOD = "flickr.photos.getRecent";
     private static final String SEARCH_METHOD = "flickr.photos.search";
@@ -78,6 +78,8 @@ public class FlickrFetchr {
         List<GalleryItem> items = new ArrayList<>();
         try {
             String jsonString = getUrlString(url);
+
+
             Log.i(TAG, "Received JSON: " + jsonString);
             JSONObject jsonBody = new JSONObject(jsonString);
             parseItems(items, jsonBody);
